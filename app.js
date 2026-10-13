@@ -676,38 +676,93 @@ $("generateBtn")?.addEventListener("click", async () => {
  }
 });
 
-$("deliveryForm")?.addEventListener("submit", e => {
- e.preventDefault();
+$("deliveryForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
- const partner = {
-  id: "DP" + Date.now().toString().slice(-6),
-  name: $("deliveryName").value.trim(),
-  phone: $("deliveryPhone").value.trim(),
-  area: $("deliveryArea").value.trim(),
-  vehicle: $("deliveryVehicle").value,
-  availability: $("deliveryAvailability").value,
-  createdAt: new Date().toISOString()
- };
+  const name = $("deliveryName").value.trim();
+  const email = $("deliveryEmail").value.trim();
+  const password = $("deliveryPassword").value;
+  const phone = $("deliveryPhone").value.trim();
+  const area = $("deliveryArea").value.trim();
+  const vehicle = $("deliveryVehicle").value;
+  const availability = $("deliveryAvailability").value;
+  const successBox = $("deliverySuccess");
+  const button = e.currentTarget.querySelector('button[type="submit"]');
 
- state.deliveryPartners.push(partner);
+  try {
+    if (!/^[0-9]{10}$/.test(phone)) {
+      throw new Error("Enter a valid 10-digit mobile number.");
+    }
 
- state.notifications.unshift({
-  id: Date.now(),
-  title: "Delivery partner application",
-  message: `${partner.name} registered for ${partner.area}.`,
-  createdAt: new Date().toISOString()
- });
+    if (password.length < 8) {
+      throw new Error("Password must be at least 8 characters.");
+    }
 
- saveState();
+    button.disabled = true;
+    button.textContent = "Creating account...";
 
- $("deliverySuccess").classList.remove("hidden");
- $("deliverySuccess").innerHTML =
-  `<b>Application saved in demo mode.</b><br>
-   Partner ID: ${escapeHTML(partner.id)}<br>
-   Area: ${escapeHTML(partner.area)}<br>
-   This is not yet sent to a real administrator.`;
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          phone,
+          role: "delivery_partner"
+        }
+      }
+    });
 
- toast("Delivery partner profile created.");
+    if (error) throw error;
+    if (!data.user) throw new Error("Account creation failed.");
+
+    // Email confirmation may be required before a session exists.
+    if (!data.session) {
+      successBox.classList.remove("hidden");
+      successBox.textContent =
+        "Account created. Check your email to confirm it. Profile setup must be completed after confirmation.";
+      return;
+    }
+
+    const { error: profileError } = await supabaseClient
+      .from("profiles")
+      .upsert({
+        id: data.user.id,
+        full_name: name,
+        phone,
+        role: "delivery_partner"
+      });
+
+    if (profileError) throw profileError;
+
+    const { error: partnerError } = await supabaseClient
+      .from("delivery_partners")
+      .upsert({
+        id: data.user.id,
+        full_name: name,
+        phone,
+        area,
+        vehicle,
+        availability
+      });
+
+    if (partnerError) throw partnerError;
+
+    successBox.classList.remove("hidden");
+    successBox.textContent =
+      "Delivery Partner account created successfully!";
+
+    e.currentTarget.reset();
+
+  } catch (error) {
+    console.error("Signup error:", error);
+    successBox.classList.remove("hidden");
+    successBox.textContent = "Signup failed: " + error.message;
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Create Delivery Partner Account";
+  }
 });
 
 function statusClass(status) {
