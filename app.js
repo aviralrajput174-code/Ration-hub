@@ -1,5 +1,5 @@
 const $ = (id) => document.getElementById(id);
-const $ = (id) => document.getElementById(id);
+
 const STORE_KEY = "rationHubDemoV1";
 
 const defaultProducts = [
