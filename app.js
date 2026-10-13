@@ -1,5 +1,12 @@
 const $ = (id) => document.getElementById(id);
+// Supabase connection
+const SUPABASE_URL = "ttmcrnwixbjuzmarldoe";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Im2tadgB_jqk61lr3-9yag_uZbfxx-k";
 
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 const STORE_KEY = "rationHubDemoV1";
 
 const defaultProducts = [
