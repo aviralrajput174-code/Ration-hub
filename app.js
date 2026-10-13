@@ -913,3 +913,83 @@ function renderAll() {
 
 fillShopForm();
 renderAll();
+// RATION HUB: REAL AUTHENTICATION
+
+async function registerUser(email, password, fullName, phone, role) {
+  const allowedRoles = [
+    "customer",
+    "shopkeeper",
+    "delivery_partner"
+  ];
+
+  if (!allowedRoles.includes(role)) {
+    throw new Error("Invalid user role.");
+  }
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        phone: phone,
+        role: role
+      }
+    }
+  });
+
+  if (error) throw error;
+
+  // Email confirmation may be required before a session is created.
+  if (!data.session) {
+    return "Check your email to confirm your account.";
+  }
+
+  return "Account created successfully!";
+}
+
+
+async function loginUser(email, password) {
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) throw error;
+
+  const user = data.user;
+
+  const { data: profile, error: profileError } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, full_name, phone, role")
+      .eq("id", user.id)
+      .single();
+
+  if (profileError) {
+    throw new Error(
+      "Login successful, but the user profile is missing. Profile setup is required."
+    );
+  }
+
+  showDashboardForRole(profile.role);
+
+  return profile;
+}
+
+
+function showDashboardForRole(role) {
+  const views = {
+    customer: "customer",
+    shopkeeper: "shopkeeper",
+    delivery_partner: "delivery"
+  };
+
+  const view = views[role];
+
+  if (!view) {
+    throw new Error("Your account role is invalid.");
+  }
+
+  showView(view);
+}
