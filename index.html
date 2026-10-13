@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#176b4d">
+  <title>Ration Hub — Local shopping, made easy</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#" aria-label="Ration Hub home"><span class="brand-mark">RH</span><span>Ration <b>Hub</b><small>YOUR NEIGHBOURHOOD MARKET</small></span></a>
+  <label class="search"><span>⌕</span><input id="searchInput" placeholder="Search rice, atta, vegetables..." autocomplete="off"><button id="clearSearch" aria-label="Clear search">×</button></label>
+  <button class="location-pill" id="addressShortcut">⌖ <span id="headerAddress">Set delivery address</span></button>
+</header>
+
+<nav class="mainnav" aria-label="Main sections">
+  <button class="nav-btn active" data-view="customer"><span>⌂</span>Customer</button>
+  <button class="nav-btn" data-view="shopkeeper"><span>▣</span>Shopkeeper</button>
+  <button class="nav-btn" data-view="delivery"><span>♧</span>Delivery Partner</button>
+  <button class="nav-btn" data-view="cart"><span>🛒</span>Cart <i id="cartCount">0</i></button>
+  <button class="nav-btn" data-view="orders"><span>▤</span>Orders</button>
+</nav>
+
+<main>
+  <section id="view-customer" class="view active">
+    <div class="hero">
+      <div class="hero-copy"><p class="eyebrow">YOUR LOCAL MARKET, ONLINE</p><h1>Daily essentials.<br><em>Right to your door.</em></h1><p>Shop from neighbourhood stores. Simple ordering, local delivery, and Cash on Delivery.</p><button class="primary-btn" id="shopNow">Explore products <span>→</span></button><div class="hero-note">● Local shops · ● Cash on Delivery · ● Easy ordering</div></div>
+      <div class="hero-art"><div class="sun"></div><div class="bag">🛍️</div><div class="produce p1">🥬</div><div class="produce p2">🥕</div><div class="produce p3">🍅</div><div class="hero-card"><b>Fresh picks</b><span>From shops near you</span></div></div>
+    </div>
+    <div class="section-heading"><div><p class="eyebrow">SHOP BY NEED</p><h2>What do you need today?</h2></div><span class="muted">Local essentials, all in one place</span></div>
+    <div class="categories" id="categories">
+      <button class="category active" data-category="All"><span>🛒</span>All items</button><button class="category" data-category="Grains"><span>🌾</span>Grains & atta</button><button class="category" data-category="Dairy"><span>🥛</span>Dairy</button><button class="category" data-category="Vegetables"><span>🥦</span>Vegetables</button><button class="category" data-category="Snacks"><span>🍪</span>Snacks</button><button class="category" data-category="Household"><span>🧹</span>Household</button>
+    </div>
+    <div class="section-heading product-heading"><div><p class="eyebrow">NEARBY STORE PICKS</p><h2>Popular products</h2></div><span class="muted" id="productCount">0 products</span></div>
+    <div class="product-grid" id="productGrid"></div>
+    <div class="empty-state hidden" id="emptyProducts"><span>🧺</span><h3>No products found yet</h3><p>Shopkeepers can add products in the Shopkeeper section.</p><button class="secondary-btn" data-goto="shopkeeper">Open shopkeeper dashboard</button></div>
+  </section>
+
+  <section id="view-shopkeeper" class="view">
+    <div class="page-title"><div><p class="eyebrow">SELL LOCALLY</p><h1>Shopkeeper dashboard</h1><p>Set up your shop, add products, and manage incoming orders.</p></div><span class="status-chip">● Demo mode</span></div>
+    <div class="dashboard-stats"><div><span>Listed products</span><b id="statProducts">0</b></div><div><span>New orders</span><b id="statOrders">0</b></div><div><span>Shop status</span><b id="shopStatus">Not set up</b></div></div>
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-title"><span class="panel-icon">🏪</span><div><h2>Your shop profile</h2><p>Customers use these details to identify your shop.</p></div></div>
+        <form id="shopForm" class="form-grid">
+          <label>Shop name<input id="shopName" required placeholder="e.g. Sharma General Store"></label>
+          <label>Owner name<input id="ownerName" required placeholder="Your full name"></label>
+          <label>Mobile number<input id="shopPhone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"></label>
+          <label>Shop address<input id="shopAddress" required placeholder="Village, street, landmark"></label>
+          <label class="full">Shop category<select id="shopCategory"><option>Grocery</option><option>Vegetables</option><option>Dairy</option><option>General store</option><option>Farm supplies</option></select></label>
+          <button class="primary-btn full" type="submit">Save shop profile</button>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="panel-icon">📦</span><div><h2>Add products in bulk</h2><p>Scan or upload a photo of your handwritten/printed price list.</p></div></div>
+        <div class="notice"><b>Important:</b> OCR reads text; it may misread handwriting or prices. Review every row before saving. A price-list photo does not contain individual product photos.</div>
+        <div class="upload-actions"><label class="upload-btn">📷 Scan with camera<input type="file" id="cameraInput" accept="image/*" capture="environment"></label><label class="upload-btn">🖼 Upload photo<input type="file" id="listImageInput" accept="image/*"></label></div>
+        <div id="ocrPreview" class="ocr-preview hidden"><img id="ocrImage" alt="Uploaded price list preview"><div><b id="ocrStatus">Ready to scan</b><p id="ocrHelp">Select Generate to read the list.</p></div></div>
+        <div class="progress-track hidden" id="ocrProgressTrack"><div id="ocrProgress"></div></div>
+        <button class="primary-btn full" id="generateBtn" type="button" disabled>✨ Generate product list</button>
+        <p class="tiny muted">Text recognition uses Tesseract.js and needs an internet connection the first time. If it fails, use the manual list below.</p>
+        <label class="standalone-label" for="bulkText">Or paste/type list manually</label>
+        <textarea id="bulkText" rows="5" placeholder="Rice, 55&#10;Wheat flour, 40&#10;Sugar, 45&#10;Format: product name, price"></textarea>
+        <button class="secondary-btn full" id="parseTextBtn" type="button">Prepare products from text</button>
+      </div>
+    </div>
+    <div class="panel review-panel">
+      <div class="panel-title"><span class="panel-icon">📝</span><div><h2>Review and publish products</h2><p>Check names, prices, category and optional product photo before publishing.</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Product name</th><th>Price (₹)</th><th>Category</th><th>Product photo</th><th></th></tr></thead><tbody id="draftRows"><tr><td colspan="5" class="muted">No draft products. Scan a list or type products above.</td></tr></tbody></table></div>
+      <div class="publish-row"><span id="draftSummary" class="muted">0 products ready</span><button class="primary-btn" id="publishBtn" type="button">Publish products</button></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title"><span class="panel-icon">🔔</span><div><h2>Incoming orders</h2><p>Orders placed in this demo appear here when using the same browser storage.</p></div></div>
+      <div id="shopOrders" class="order-list"></div>
+    </div>
+  </section>
+
+  <section id="view-delivery" class="view">
+    <div class="page-title"><div><p class="eyebrow">EARN LOCALLY</p><h1>Become a delivery partner</h1><p>Help nearby families receive everyday essentials at home.</p></div><span class="delivery-emoji">🛵</span></div>
+    <div class="delivery-banner"><div><h2>Deliver close to home.</h2><p>Flexible local deliveries, with clear order details and cash-on-delivery handling.</p></div><span>📍</span></div>
+    <div class="two-col">
+      <div class="panel"><div class="panel-title"><span class="panel-icon">✅</span><div><h2>Basic requirements</h2><p>Have these ready before applying.</p></div></div><ul class="requirements"><li>Be legally eligible to work as a delivery partner in your area.</li><li>Have a working mobile phone and reachable number.</li><li>Know local streets and nearby villages.</li><li>Have a bicycle, scooter, or other suitable transport.</li><li>Carry any locally required identity/licence documents for your vehicle and age eligibility.</li><li>Be polite, punctual, and handle customer orders carefully.</li></ul><p class="tiny muted">Do not upload sensitive identity documents to this demo site.</p></div>
+      <div class="panel"><div class="panel-title"><span class="panel-icon">🧑‍🚴</span><div><h2>Partner application</h2><p>Complete the form to create a demo partner profile.</p></div></div>
+        <form id="deliveryForm" class="form-grid">
+          <label>Full name<input id="deliveryName" required placeholder="Your name"></label><label>Mobile number<input id="deliveryPhone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"></label>
+          <label>Village / area<input id="deliveryArea" required placeholder="Your service area"></label><label>Preferred vehicle<select id="deliveryVehicle"><option>Bicycle</option><option>Motorcycle / scooter</option><option>Other</option></select></label>
+          <label class="full">Availability<select id="deliveryAvailability"><option>Part-time</option><option>Full-time</option><option>Weekends only</option></select></label>
+          <button class="primary-btn full" type="submit">Become a delivery partner</button>
+        </form><div id="deliverySuccess" class="success-box hidden"></div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-title"><span class="panel-icon">🧾</span><div><h2>Delivery dashboard</h2><p>Review available orders and update delivery status.</p></div></div><div id="deliveryOrders" class="order-list"></div></div>
+  </section>
+
+  <section id="view-cart" class="view">
+    <div class="page-title"><div><p class="eyebrow">READY WHEN YOU ARE</p><h1>Your cart</h1><p>Review your items before placing a Cash on Delivery order.</p></div><span class="cart-hero">🛒</span></div>
+    <div class="checkout-layout"><div class="panel"><div id="cartItems" class="cart-items"></div></div><div class="panel checkout-panel"><h2>Delivery details</h2><p class="muted">Enter your details for this demo checkout.</p>
+      <form id="checkoutForm">
+        <label>Customer name<input id="customerName" required placeholder="Your name"></label>
+        <label>Mobile number<input id="customerPhone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"></label>
+        <label>Delivery address<textarea id="customerAddress" required rows="3" placeholder="Village, street, landmark"></textarea></label>
+        <div class="verify-row"><button class="secondary-btn" id="verifyPhoneBtn" type="button">Verify number (demo)</button><span id="verifyStatus" class="muted">Not verified</span></div>
+        <div class="payment-method"><span>💵</span><div><b>Cash on Delivery (COD)</b><small>Pay in cash when your order arrives.</small></div><span class="cod-badge">SELECTED</span></div>
+        <div class="bill-row"><span>Subtotal</span><b id="cartSubtotal">₹0</b></div><div class="bill-row"><span>Delivery fee</span><b id="deliveryFee">₹0</b></div><div class="bill-row total"><span>Total</span><b id="cartTotal">₹0</b></div>
+        <button class="primary-btn full" id="placeOrderBtn" type="submit">Place order · COD</button><p class="tiny muted">Demo note: phone verification is simulated; no SMS/OTP is sent.</p>
+      </form>
+    </div></div>
+  </section>
+
+  <section id="view-orders" class="view">
+    <div class="page-title"><div><p class="eyebrow">ORDER TRACKING</p><h1>Your orders</h1><p>Track orders, cancel eligible orders, or update delivery progress in demo mode.</p></div><span class="orders-hero">📋</span></div>
+    <div class="order-filter"><button class="filter-btn active" data-order-filter="all">All orders</button><button class="filter-btn" data-order-filter="active">Active</button><button class="filter-btn" data-order-filter="cancelled">Cancelled</button></div>
+    <div id="customerOrders" class="order-list"></div>
+  </section>
+
+  <section id="view-notifications" class="view">
+    <div class="page-title"><div><p class="eyebrow">ACTIVITY</p><h1>Notifications</h1><p>New order activity for this browser demo.</p></div></div><div id="notificationsList" class="order-list"></div>
+  </section>
+</main>
+<footer><div class="footer-brand"><span class="brand-mark">RH</span><b>Ration Hub</b></div><p>Local shops. Everyday essentials. Neighbourhood convenience.</p><small>Prototype · No real OTP, server notifications, or online payment is connected.</small><button id="notificationsShortcut" class="footer-notifications">🔔 Notifications <i id="notificationCount">0</i></button></footer>
+<div id="toast" class="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
