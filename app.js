@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
 // Supabase connection
-const SUPABASE_URL = "ttmcrnwixbjuzmarldoe";
+const SUPABASE_URL = "https://ttmcrnwixbjuzmarldoe.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Im2tadgB_jqk61lr3-9yag_uZbfxx-k";
 
 const supabaseClient = window.supabase.createClient(
