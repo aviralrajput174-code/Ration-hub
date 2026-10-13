@@ -83,12 +83,67 @@
     <div class="two-col">
       <div class="panel"><div class="panel-title"><span class="panel-icon">✅</span><div><h2>Basic requirements</h2><p>Have these ready before applying.</p></div></div><ul class="requirements"><li>Be legally eligible to work as a delivery partner in your area.</li><li>Have a working mobile phone and reachable number.</li><li>Know local streets and nearby villages.</li><li>Have a bicycle, scooter, or other suitable transport.</li><li>Carry any locally required identity/licence documents for your vehicle and age eligibility.</li><li>Be polite, punctual, and handle customer orders carefully.</li></ul><p class="tiny muted">Do not upload sensitive identity documents to this demo site.</p></div>
       <div class="panel"><div class="panel-title"><span class="panel-icon">🧑‍🚴</span><div><h2>Partner application</h2><p>Complete the form to create a demo partner profile.</p></div></div>
-        <form id="deliveryForm" class="form-grid">
-          <label>Full name<input id="deliveryName" required placeholder="Your name"></label><label>Mobile number<input id="deliveryPhone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"></label>
-          <label>Village / area<input id="deliveryArea" required placeholder="Your service area"></label><label>Preferred vehicle<select id="deliveryVehicle"><option>Bicycle</option><option>Motorcycle / scooter</option><option>Other</option></select></label>
-          <label class="full">Availability<select id="deliveryAvailability"><option>Part-time</option><option>Full-time</option><option>Weekends only</option></select></label>
-          <button class="primary-btn full" type="submit">Become a delivery partner</button>
-        </form><div id="deliverySuccess" class="success-box hidden"></div>
+<form id="deliveryForm" class="form-grid">
+
+  <label>
+    Full name
+    <input id="deliveryName" type="text"
+           required placeholder="Your full name">
+  </label>
+
+  <label>
+    Email address
+    <input id="deliveryEmail" type="email"
+           required autocomplete="email"
+           placeholder="you@example.com">
+  </label>
+
+  <label>
+    Password
+    <input id="deliveryPassword" type="password"
+           required minlength="8"
+           autocomplete="new-password"
+           placeholder="At least 8 characters">
+  </label>
+
+  <label>
+    Mobile number
+    <input id="deliveryPhone" type="tel"
+           required inputmode="numeric"
+           pattern="[0-9]{10}" maxlength="10"
+           placeholder="10-digit mobile number">
+  </label>
+
+  <label>
+    Village / area
+    <input id="deliveryArea" type="text"
+           required placeholder="Your service area">
+  </label>
+
+  <label>
+    Preferred vehicle
+    <select id="deliveryVehicle" required>
+      <option value="Bicycle">Bicycle</option>
+      <option value="Motorcycle / scooter">Motorcycle / scooter</option>
+      <option value="Other">Other</option>
+    </select>
+  </label>
+
+  <label>
+    Availability
+    <select id="deliveryAvailability" required>
+      <option value="Part-time">Part-time</option>
+      <option value="Full-time">Full-time</option>
+      <option value="Weekends only">Weekends only</option>
+    </select>
+  </label>
+
+  <button class="primary-btn full" type="submit">
+    Create Delivery Partner Account
+  </button>
+
+</form>
+<div id="deliverySuccess" class="success-box hidden"></div>
       </div>
     </div>
     <div class="panel"><div class="panel-title"><span class="panel-icon">🧾</span><div><h2>Delivery dashboard</h2><p>Review available orders and update delivery status.</p></div></div><div id="deliveryOrders" class="order-list"></div></div>
